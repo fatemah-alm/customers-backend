@@ -1,12 +1,18 @@
 const express = require("express");
 const customerRoutes = require("./api/customers/routes");
+const passport = require("passport");
+const { localStrategy, jwtStrategy } = require("./middleware/passport");
 
 const connectDb = require("./database");
 
 const app = express();
 const port = 8000;
 
-//routes
+//middlewares
+app.use(passport.initialize());
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+routes;
 app.use("/api/customers", customerRoutes);
 
 //Error handling middleware

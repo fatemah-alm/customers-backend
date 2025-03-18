@@ -5,6 +5,7 @@ const CustomerSchema = new mongoose.Schema({
   id: {
     type: Number,
     unique: true,
+    sparse: true,
     validate: {
       validator: function (val) {
         return val.toString().length === 9;
