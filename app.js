@@ -1,6 +1,8 @@
 const express = require("express");
 const customerRoutes = require("./api/customers/routes");
 
+const connectDb = require("./database");
+
 const app = express();
 const port = 8000;
 
@@ -22,3 +24,5 @@ app.use((req, res, next) => {
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
+
+connectDb();
