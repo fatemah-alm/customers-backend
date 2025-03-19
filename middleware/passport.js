@@ -1,21 +1,21 @@
-const User = require("../database/models/User");
-const bcrypt = require("bcrypt");
-const { keys } = require("../config/keys");
-const { now } = require("mongoose");
-
 const LocalStrategy = require("passport-local").Strategy;
 const JWTStrategy = require("passport-jwt").Strategy;
 const { fromAuthHeaderAsBearerToken } = require("passport-jwt").ExtractJwt;
+const dotenv = require("dotenv");
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+dotenv.config();
 
-exports.localStrategy = new LocalStrategy(async (username, password, done) => {
+exports.localStrategy = new LocalStrategy(async (email, password, done) => {
   try {
-    const user = await User.findOne({ username: username });
-    const passwordsMatch = user
-      ? await bcrypt.compare(password, user.password)
-      : false;
-
-    passwordsMatch ? done(null, user) : done(null, false);
+    const user = await User.findOne({ username: email });
+    const passwordMatch =
+      user && (await bcrypt.compare(password, user.password));
+    const error = new Error("username or password is wrong");
+    error.status = 401;
+    passwordMatch ? done(null, user) : done(error);
   } catch (error) {
+    console.log("errorrrrrr", error);
     done(error);
   }
 });
@@ -23,13 +23,16 @@ exports.localStrategy = new LocalStrategy(async (username, password, done) => {
 exports.jwtStrategy = new JWTStrategy(
   {
     jwtFromRequest: fromAuthHeaderAsBearerToken(),
-    secretOrKey: keys.JWT_SECRET,
+    secretOrKey: process.env.SECRET_KEY,
   },
   async (jwtPayload, done) => {
-    if (Date.now() > jwtPayload.exp) return done(null, false);
+    if (Date.now() > jwtPayload.exp) {
+      done(null, false);
+    }
     try {
-      const user = await User.findById(jwtPayload._id);
-      return done(null, user);
+      const user123 = await User.findById(jwtPayload._id);
+
+      user123 ? done(null, user123) : done(null, false);
     } catch (error) {
       done(error);
     }

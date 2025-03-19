@@ -16,6 +16,7 @@ const CustomerSchema = new mongoose.Schema({
   name: { type: String, maxLength: 255 },
   dob: Date,
   gender: { type: String, maxLength: 1 },
+  // owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 // CustomerSchema.plugin(mongooseSlugPlugin, { tmpl: "<%=title%>" });

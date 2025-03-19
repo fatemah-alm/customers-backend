@@ -23,7 +23,11 @@ router.param("customerId", async (req, res, next, customerId) => {
 });
 
 router.get("/", fetchCustomers);
-router.post("/", passport.authenticate("jwt", { session: false }), addCustomer);
+router.post(
+  "/new",
+  passport.authenticate("jwt", { session: false }),
+  addCustomer
+);
 
 router.put(
   "/:customerId",
