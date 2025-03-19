@@ -10,19 +10,8 @@ const {
   updateCustomer,
 } = require("./controllers");
 
-router.param("customerId", async (req, res, next, customerId) => {
-  const customer = await fetchCustomer(customerId, next);
-  if (customer) {
-    res.customer = customer;
-    next();
-  } else {
-    const err = new Error("customer Not Found");
-    err.status = 404;
-    next(err);
-  }
-});
-
 router.get("/", fetchCustomers);
+router.get("/:customerId", fetchCustomer);
 router.post(
   "/new",
   passport.authenticate("jwt", { session: false }),

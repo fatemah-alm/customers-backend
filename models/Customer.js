@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const mongooseSlugPlugin = require("mongoose-slug-plugin");
 
 const CustomerSchema = new mongoose.Schema({
-  id: {
+  number: {
     type: Number,
     unique: true,
     sparse: true,

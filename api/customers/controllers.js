@@ -6,14 +6,15 @@ exports.fetchCustomers = async (req, res, next) => {
     return res.json(customers);
   } catch (error) {
     next(error);
-    // return res.status(500).json({ message: error.message });
   }
 };
 
-exports.fetchCustomer = async (customerId, next) => {
+exports.fetchCustomer = async (req, res, next) => {
   try {
-    const customer = await Customer.findById(customerId).populate();
-    if (customer) return customer;
+    const { customerId } = req.params;
+
+    const customer = await Customer.findById(customerId);
+    if (customer) res.status(200).json(customer);
     else {
       const err = new Error("Customer not found");
       err.status = 404;
@@ -27,11 +28,10 @@ exports.fetchCustomer = async (customerId, next) => {
 exports.addCustomer = async (req, res, next) => {
   try {
     if (req.user) {
+      console.log(req.user);
       const newCustomer = await Customer.create(req.body);
       console.log(newCustomer);
-      return res
-        .status(201)
-        .json({ msg: "customer Added", payload: newCustomer });
+      res.status(201).json(newCustomer);
     } else {
       return res
         .status(401)
