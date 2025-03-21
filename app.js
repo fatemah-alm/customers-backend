@@ -4,8 +4,7 @@ import runDbMigrations from "./db/migrations/index.js";
 
 //import routes
 import customerRoutes from "./api/customers/routes.js";
-import userRoutes from "./api/user/routes.js";
-import authRoutes from "./api/user/auth-routes.js";
+import authRoutes from "./api/user/routes.js";
 import helmet from "helmet";
 
 //init
@@ -19,7 +18,6 @@ await runDbMigrations();
 // routes
 
 app.use("/customers", customerRoutes);
-app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use((req, res, next) => {

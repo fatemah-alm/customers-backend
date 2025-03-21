@@ -6,7 +6,7 @@ import {
   updateCustomer,
   deleteCustomer,
 } from "./queries.js";
-import authenticateToken from "../../middleware/passport.js";
+import authenticateToken from "../../middleware/authenticateToken.js";
 const router = Router();
 
 router.post("/", authenticateToken, async (req, res) => {
