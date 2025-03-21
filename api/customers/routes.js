@@ -1,33 +1,37 @@
-const express = require("express");
-const passport = require("passport");
-const router = express.Router();
-
-const {
-  fetchCustomers,
-  addCustomer,
-  fetchCustomer,
-  deleteCustomer,
+import { Router } from "express";
+// const passport = require("passport");
+import {
+  createCustomer,
+  findAllCustomers,
+  findCustomer,
   updateCustomer,
-} = require("./controllers");
+  deleteCustomer,
+} from "./controllers.js";
 
-router.get("/", fetchCustomers);
-router.get("/:customerId", fetchCustomer);
-router.post(
-  "/new",
-  passport.authenticate("jwt", { session: false }),
-  addCustomer
-);
+const router = Router();
 
-router.put(
-  "/:customerId",
-  passport.authenticate("jwt", { session: false }),
-  updateCustomer
-);
+router.post("/", async (req, res) => {
+  const result = await createCustomer(req.body);
+  res.status(201).json(result);
+});
+router.get("/", async (req, res) => {
+  const result = await findAllCustomers();
+  res.status(200).json(result);
+});
 
-router.delete(
-  "/:customerId",
-  passport.authenticate("jwt", { session: false }),
-  deleteCustomer
-);
+router.get("/:id", async (req, res) => {
+  const result = await findCustomer(req.params.id);
+  res.status(200).json(result);
+});
 
-module.exports = router;
+router.put("/:id", async (req, res) => {
+  const result = await updateCustomer(req.params.id, req.body);
+  res.status(200).json(result);
+});
+
+router.delete("/:id", async (req, res) => {
+  const result = await deleteCustomer(req.params.id);
+  res.status(200).json(result);
+});
+
+export default router;
