@@ -65,11 +65,11 @@ This repo is a simple backend for managing customers using express with postgreS
 #### Update Customer
 
 ```http
-  PUT /customers
+  PUT /customers/:id
 ```
 
 #### Delete Customer
 
 ```http
-  DELETE /customers
+  DELETE /customers/:id
 ```
