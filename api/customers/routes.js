@@ -6,7 +6,7 @@ import {
   findCustomer,
   updateCustomer,
   deleteCustomer,
-} from "./controllers.js";
+} from "./queries.js";
 
 const router = Router();
 
