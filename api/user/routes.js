@@ -1,14 +1,29 @@
-const express = require("express");
-const passport = require("passport");
-const { signup, signin } = require("./controllers");
+import { Router } from "express";
+import db from "../../db/index.js";
+import bcrypt from "bcryptjs";
 
-const router = express.Router();
+const router = Router();
 
-router.post("/signup", signup);
-router.post(
-  "/signin",
-  passport.authenticate("local", { session: false }),
-  signin
-);
+router.get("/", async (req, res) => {
+  try {
+    const users = await db.query("SELECT * FROM users;");
+    res.json({ users: users.rows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-module.exports = router;
+router.post("/", async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const newUser = await db.query(
+      "INSERT INTO users (username, email, password) VALUES ($1,$2,$3) RETURNING *;",
+      [req.body.user_name, req.body.email, hashedPassword]
+    );
+    res.json({ users: newUser.rows[0] });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+export default router;

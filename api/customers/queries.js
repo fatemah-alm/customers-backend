@@ -8,10 +8,12 @@ export const createCustomer = async ({ name, number, dob, gender }) => {
   VALUES 
     ($1,$2,$3,$4)
     RETURNING *;`;
-
-  const result = await db.query(query, [name, number, dob, gender]);
-
-  return result.rows[0];
+  try {
+    const result = await db.query(query, [name, number, dob, gender]);
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const findCustomer = async (id) => {
@@ -20,16 +22,25 @@ export const findCustomer = async (id) => {
   customers 
   WHERE 
   id = $1;`;
-  const result = await db.query(query, [+id]);
-  return result.rows[0];
+  try {
+    const result = await db.query(query, [+id]);
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const findAllCustomers = async () => {
   const query = `
   SELECT * FROM
   customers;`;
-  const result = await db.query(query);
-  return result.rows;
+
+  try {
+    const result = await db.query(query);
+    return result.rows;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const updateCustomer = async (id, { name, number, dob, gender }) => {
@@ -45,8 +56,13 @@ export const updateCustomer = async (id, { name, number, dob, gender }) => {
     id = $1
   RETURNING *;
   `;
-  const result = await db.query(query, [+id, name, number, dob, gender]);
-  return result.rows[0];
+
+  try {
+    const result = await db.query(query, [id, name, number, dob, gender]);
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const deleteCustomer = async (id) => {
@@ -56,6 +72,10 @@ export const deleteCustomer = async (id) => {
   WHERE 
     id = $1
   RETURNING *;`;
-  const result = await db.query(query, [+id]);
-  return result.rows[0];
+  try {
+    const result = await db.query(query, [id]);
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
 };

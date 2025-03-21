@@ -10,4 +10,8 @@ const db = new pg.Pool({
   database: process.env.DB_DATABASE,
 });
 
+db.on("error", (error) => {
+  console.log(error.message);
+});
+
 export default db;

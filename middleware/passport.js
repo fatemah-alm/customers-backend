@@ -1,39 +1,16 @@
-const LocalStrategy = require("passport-local").Strategy;
-const JWTStrategy = require("passport-jwt").Strategy;
-const { fromAuthHeaderAsBearerToken } = require("passport-jwt").ExtractJwt;
-const dotenv = require("dotenv");
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 dotenv.config();
 
-exports.localStrategy = new LocalStrategy(async (email, password, done) => {
-  try {
-    const user = await User.findOne({ username: email });
-    const passwordMatch =
-      user && (await bcrypt.compare(password, user.password));
-    const error = new Error("username or password is wrong");
-    error.status = 401;
-    passwordMatch ? done(null, user) : done(error);
-  } catch (error) {
-    console.log("errorrrrrr", error);
-    done(error);
-  }
-});
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"]; //Bearer token
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.status(401).json({ error: "null token" });
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
+    if (error) return res.status(403).json({ error: error.message });
+    req.user = user;
+    next();
+  });
+}
 
-exports.jwtStrategy = new JWTStrategy(
-  {
-    jwtFromRequest: fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.SECRET_KEY,
-  },
-  async (jwtPayload, done) => {
-    if (Date.now() > jwtPayload.exp) {
-      done(null, false);
-    }
-    try {
-      const user123 = await User.findById(jwtPayload._id);
-      user123 ? done(null, user123) : done(null, false);
-    } catch (error) {
-      done(error);
-    }
-  }
-);
+export default authenticateToken;
