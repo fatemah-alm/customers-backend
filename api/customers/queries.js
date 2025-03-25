@@ -30,6 +30,20 @@ export const findCustomer = async (id) => {
   }
 };
 
+export const findCustomerByNumber = async (number) => {
+  const query = `
+  SELECT * FROM 
+  customers 
+  WHERE 
+  number = $1;`;
+  try {
+    const result = await db.query(query, [+number]);
+    return result.rows[0];
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const findAllCustomers = async () => {
   const query = `
   SELECT * FROM

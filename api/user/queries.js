@@ -2,16 +2,17 @@ import db from "../../db/index.js";
 import bcrypt from "bcryptjs";
 import jwtTokens from "../../utils/jwt-helpers.js";
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     const users = await db.query("SELECT * FROM users;");
     res.json({ users: users.rows });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const newUser = await db.query(
@@ -20,11 +21,11 @@ export const registerUser = async (req, res) => {
     );
     res.json({ users: newUser.rows[0] });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const users = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -44,6 +45,6 @@ export const loginUser = async (req, res) => {
     res.cookie("refresh_token", tokens.refreshToken, { httpOnly: true });
     res.json(tokens);
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 };

@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import runDbMigrations from "./db/migrations/index.js";
 
 //import routes
@@ -11,6 +12,7 @@ import helmet from "helmet";
 const app = express();
 const port = 8000;
 app.use(morgan("common"));
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 await runDbMigrations();

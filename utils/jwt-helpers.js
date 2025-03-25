@@ -5,10 +5,10 @@ dotenv.config();
 function jwtTokens({ user_id, username, email }) {
   const user = { user_id, username, email };
   const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "24h",
   });
   const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "24h",
   });
   return { accessToken, refreshToken };
 }

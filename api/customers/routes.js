@@ -5,30 +5,55 @@ import {
   findCustomer,
   updateCustomer,
   deleteCustomer,
+  findCustomerByNumber,
 } from "./queries.js";
 import authenticateToken from "../../middleware/authenticateToken.js";
 const router = Router();
 
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateToken, async (req, res, next) => {
   try {
+    const customer = await findCustomerByNumber(req.body.number);
+    if (customer) {
+      return res
+        .status(409)
+        .json({ message: "Customer number already exists" });
+    }
+    console.log(req.body.number.toString().length);
+
+    if (req.body.number.toString().length < 9) {
+      return res
+        .status(403)
+        .json({ message: "number must be exactly 9 digits" });
+    }
+
     const result = await createCustomer(req.body);
     if (!result) res.status(403).json({ error: "bad request" });
-
     res.status(201).json(result);
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 });
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
     const result = await findAllCustomers();
-    res.status(200).json(result);
+    console.log(result);
+    const paginatedCustomers = result.slice(skip, skip + limit);
+
+    res.status(200).json({
+      allCustomers: result,
+      customers: paginatedCustomers,
+      currentPage: page,
+      totalPages: Math.ceil(result.length / limit),
+    });
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 });
 
-router.get("/:id", authenticateToken, async (req, res) => {
+router.get("/:id", authenticateToken, async (req, res, next) => {
   try {
     const result = await findCustomer(req.params.id);
     if (!result) {
@@ -37,12 +62,24 @@ router.get("/:id", authenticateToken, async (req, res) => {
       res.status(200).json(result);
     }
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 });
 
-router.put("/:id", authenticateToken, async (req, res) => {
+router.put("/:id", authenticateToken, async (req, res, next) => {
   try {
+    const customer = await findCustomerByNumber(req.body.number);
+    if (customer) {
+      return res
+        .status(409)
+        .json({ message: "Customer number already exists" });
+    }
+
+    if (req.body.number.toString().length < 9) {
+      return res
+        .status(403)
+        .json({ message: "number must be exactly 9 digits" });
+    }
     const result = await updateCustomer(req.params.id, req.body);
     if (!result) {
       res.status(404).json({ msg: "customer not found" });
@@ -50,11 +87,11 @@ router.put("/:id", authenticateToken, async (req, res) => {
       res.status(200).json(result);
     }
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 });
 
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res, next) => {
   try {
     const result = await deleteCustomer(req.params.id);
     if (!result) {
@@ -63,7 +100,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
       res.status(200).json(result);
     }
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 });
 
