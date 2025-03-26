@@ -37,9 +37,10 @@ router.get("/", async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const searchTerm = req.query.search || "";
+    const gender = req.query.gender || "";
     const skip = (page - 1) * limit;
-    const result = await findAllCustomers();
-    console.log(result);
+    const result = await findAllCustomers(searchTerm, gender);
     const paginatedCustomers = result.slice(skip, skip + limit);
 
     res.status(200).json({
@@ -68,13 +69,6 @@ router.get("/:id", authenticateToken, async (req, res, next) => {
 
 router.put("/:id", authenticateToken, async (req, res, next) => {
   try {
-    const customer = await findCustomerByNumber(req.body.number);
-    if (customer) {
-      return res
-        .status(409)
-        .json({ message: "Customer number already exists" });
-    }
-
     if (req.body.number.toString().length < 9) {
       return res
         .status(403)

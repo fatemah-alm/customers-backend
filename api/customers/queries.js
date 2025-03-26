@@ -44,13 +44,27 @@ export const findCustomerByNumber = async (number) => {
   }
 };
 
-export const findAllCustomers = async () => {
-  const query = `
+export const findAllCustomers = async (searchTerm = "", gender = "") => {
+  let query = `
   SELECT * FROM
-  customers;`;
+  customers WHERE 1=1`;
+
+  const values = [];
+
+  if (searchTerm) {
+    query += ` AND LOWER(name) LIKE LOWER($${values.length + 1})`;
+    values.push(`%${searchTerm}%`);
+  }
+
+  if (gender) {
+    query += ` AND gender = $${values.length + 1}`;
+    values.push(gender);
+  }
 
   try {
-    const result = await db.query(query);
+    const result =
+      values.length > 0 ? await db.query(query, values) : await db.query(query);
+
     return result.rows;
   } catch (error) {
     throw error;
