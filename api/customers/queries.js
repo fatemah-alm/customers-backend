@@ -44,7 +44,11 @@ export const findCustomerByNumber = async (number) => {
   }
 };
 
-export const findAllCustomers = async (searchTerm = "", gender = "") => {
+export const findAllCustomers = async (
+  searchTerm = "",
+  gender = "",
+  number = ""
+) => {
   let query = `
   SELECT * FROM
   customers WHERE 1=1`;
@@ -59,6 +63,12 @@ export const findAllCustomers = async (searchTerm = "", gender = "") => {
   if (gender) {
     query += ` AND gender = $${values.length + 1}`;
     values.push(gender);
+  }
+  if (number) {
+    console.log(number);
+
+    query += ` AND number LIKE $${values.length + 1}`;
+    values.push(`%${parseInt(number)}%`);
   }
 
   try {

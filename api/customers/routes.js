@@ -39,8 +39,9 @@ router.get("/", async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const searchTerm = req.query.search || "";
     const gender = req.query.gender || "";
+    const number = req.query.number || "";
     const skip = (page - 1) * limit;
-    const result = await findAllCustomers(searchTerm, gender);
+    const result = await findAllCustomers(searchTerm, gender, number);
     const paginatedCustomers = result.slice(skip, skip + limit);
 
     res.status(200).json({
